@@ -1,22 +1,12 @@
-This is a opensource primecoin pool based on the xpt protocol of ypool.
-You can use any miner that supports the xpt protocol.
-
-This code is based on a private pool build.
-So there is no user managment enabled and the PPLNS System is not running too.
-If you need that just browse the code and comment the stuff back in.
-
-Features:
-- autopayment to a given address in code ( xptServer.cpp )
-- unique work for every worker
-- can handle high load very well ( tested with more then 100.000 miners )
-- mysql backend
-
 How to install:
 
 A) Database
 1. Setup a mysql database and import the pool.sql file.
 Make sure you are creating a innodb database.
 Create a user for the poolserver to access this database.
+
+Create a user in the table users with the id "1".
+This is needed because all connecting workers will be assigned to this user.
 
 B) Poolserver
 1. Installing the required dependencies ( Ubuntu )
@@ -36,7 +26,7 @@ sudo make install
 Important:
 Because encrypting the wallet is important you are supposed to change the wallet key in the source code.
 The wallet key is hardcoded because it is more secure than to store it in a config file.
-Open the file "main.cpp" and "xptServer.cpp" and search for "CHANGEME":
+Open the file "main.cpp" and search for:
 
 "pwallet->EncryptWallet("CHANGEME");"
 Change "CHANGEME" to the wallet passphrase of your choice.
@@ -62,11 +52,9 @@ cd
 mkdir -p .primecoin
 echo 'server=1
 gen=1
-server=1
 rpcallowip=127.0.0.1
 rpcuser=primecoinrpc
 rpcpassword=SOME_SECURE_PASSWORD
-threads=4
 poolport=10034
 sqlhost=localhost
 sqluser=pool
@@ -81,13 +69,12 @@ cd
 chmod 770 primecoind
 ./primecoind
 
-Important: Wait till the server has catched up with the blockchain until you connect your miner.
 Now try to connect with your miner to your_ip:poolport
 
-What do the custom parameters mean ?
-- sql* = sql connection info
-- threads = how much threads shall be spawned to handle the workers
 
-Donations are welcome:
-XPM AbCbdrpuxMqcKqNSTqs22RDvodh29HdR2X
-BTC 1JRTVsHvU1nQe75mfroCyL9ZPxeKDWnGx2
+How to run multiple servers ?
+This is an easy task.
+Just make sure every server instance uses the same wallet passphrase in the code.
+Copy the wallet.dat from the original server to the new server in the folder .primecoin.
+Also copy the primecoin.conf file to the directory
+Fire up the server and now you have two pools mining to the same wallet.
